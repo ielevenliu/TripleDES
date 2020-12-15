@@ -1,0 +1,5 @@
+set(SRC_LISTS main.cpp)
+include_directories(./)
+link_directories(../library)
+add_executable(main ${SRC_LISTS})
+target_link_libraries(main TripleDES)
