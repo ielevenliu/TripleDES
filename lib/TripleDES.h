@@ -7,11 +7,11 @@
 /*
 * 
 */
-void encryptionTripleDes(char* plaintext, int len, char* key1, char* key2, char* key3);
+void encryptionTripleDes(uint8_t* plaintext, int len, char* key1, char* key2, char* key3);
 
 /*
 * 
 */
-void decryptionTripleDes(char* ciphertext, int len, char* key1, char* key2, char* key3);
+void decryptionTripleDes(uint8_t* ciphertext, int len, char* key1, char* key2, char* key3);
 
 #endif //__TRIPLEDES__
