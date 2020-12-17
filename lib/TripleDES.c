@@ -100,28 +100,28 @@ int PC_2[48] = { 13,16,10,23,0, 4, 2, 27,
 /* Left shift number of times */
 int left[16] = { 1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1 };
 
-void byteToBit(char ch, char bit[8]) {
+void byteToBit(uint8_t ch, uint8_t bit[8]) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
 		*(bit + cnt) = (ch >> cnt) & 1;
 	}
 }
 
-void char8ToBit64(char* ch, char bit[64]) {
+void uchar8ToBit64(uint8_t* ch, uint8_t bit[64]) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
 		byteToBit(*(ch + cnt), bit + (cnt << 3));
 	}
 }
 
-void bitToByte(char bit[8], char* ch) {
+void bitToByte(uint8_t bit[8], uint8_t* ch) {
 	int cnt;
 	for (cnt = 0; cnt < 8; cnt++) {
 		*ch |= *(bit + cnt) << cnt;
 	}
 }
 
-void bit64ToChar8(char bit[64], char ch[8]) {
+void bit64ToUchar8(uint8_t bit[64], uint8_t ch[8]) {
 	int cnt;
 	memset(ch, 0, 8);
 	for (cnt = 0; cnt < 8; cnt++) {
@@ -129,15 +129,15 @@ void bit64ToChar8(char bit[64], char ch[8]) {
 	}
 }
 
-void transformPC1(char key[64], char tempbts[56]) {
+void transformPC1(uint8_t key[64], uint8_t tempbts[56]) {
 	int cnt;
 	for (cnt = 0; cnt < 56; cnt++) {
 		tempbts[cnt] = key[PC_1[cnt]];
 	}
 }
 
-void ROL(char data[56], int time) {
-	char temp[56];
+void ROL(uint8_t data[56], uint8_t time) {
+	uint8_t temp[56];
 
 	memcpy(temp, data, time);
 	memcpy(temp + time, data + 28, time);	
@@ -151,15 +151,15 @@ void ROL(char data[56], int time) {
 	memcpy(data + 56 - time, temp + time, time);
 }
 
-void transformPC2(char key[56], char tempbts[48]) {
+void transformPC2(uint8_t key[56], uint8_t tempbts[48]) {
 	int cnt;
 	for (cnt = 0; cnt < 48; cnt++) {
 		tempbts[cnt] = key[PC_2[cnt]];
 	}
 }
 
-void makeBitSubKeys(char key[64], char subKeys[16][48]) {
-	char temp[56];
+void makeBitSubKeys(uint8_t key[64], uint8_t subKeys[16][48]) {
+	uint8_t temp[56];
 	int cnt;
 	transformPC1(key, temp);
 	for (cnt = 0; cnt < 16; cnt++) {
@@ -168,50 +168,50 @@ void makeBitSubKeys(char key[64], char subKeys[16][48]) {
 	}
 }
 
-void transformIp(char data[64]) {
+void transformIp(uint8_t data[64]) {
 	int cnt;
-	char temp[64];
+	uint8_t temp[64];
 	for (cnt = 0; cnt < 64; cnt++) {
 		temp[cnt] = data[IP[cnt]];
 	}
 	memcpy(data, temp, 64);
 }
 
-void transformIp_1(char data[64]) {
+void transformIp_1(uint8_t data[64]) {
 	int cnt;
-	char temp[64];
+	uint8_t temp[64];
 	for (cnt = 0; cnt < 64; cnt++) {
 		temp[cnt] = data[IP_1[cnt]];
 	}
 	memcpy(data, temp, 64);
 }
 
-void transformE(char data[48]) {
+void transformE(uint8_t data[48]) {
 	int cnt;
-	char temp[48];
+	uint8_t temp[48];
 	for (cnt = 0; cnt < 48; cnt++) {
 		temp[cnt] = data[E[cnt]];
 	}
 	memcpy(data, temp, 48);
 }
 
-void transformP(char data[32]) {
+void transformP(uint8_t data[32]) {
 	int cnt;
-	char temp[32];
+	uint8_t temp[32];
 	for (cnt = 0; cnt < 32; cnt++) {
 		temp[cnt] = data[P[cnt]];
 	}
 	memcpy(data, temp, 32);
 }
 
-void XOR(char r[48], char l[48], int count) {
+void XOR(uint8_t r[48], uint8_t l[48], int count) {
 	int cnt;
 	for (cnt = 0; cnt < count; cnt++) {
 		r[cnt] ^= l[cnt];
 	}
 }
 
-void Sbox(char data[48]) {
+void Sbox(uint8_t data[48]) {
 	int cnt;
 	int line, row, output;
 	int cur1, cur2;
@@ -230,19 +230,19 @@ void Sbox(char data[48]) {
 	}
 }
 
-void swap(char left[32], char right[32]) {
-	char temp[32];
+void swap(uint8_t left[32], uint8_t right[32]) {
+	uint8_t temp[32];
 	memcpy(temp, left, 32);
 	memcpy(left, right, 32);
 	memcpy(right, temp, 32);
 }
 
-void encryptBlock(char plainBlock[8], char subKeys[16][48]) {
-	char plainBits[64];
-	char copyRight[48];
+void encryptBlock(uint8_t plainBlock[8], uint8_t subKeys[16][48]) {
+	uint8_t plainBits[64];
+	uint8_t copyRight[48];
 	int cnt;
 
-	char8ToBit64(plainBlock, plainBits);
+	uchar8ToBit64(plainBlock, plainBits);
 	transformIp(plainBits);
 
 	for (cnt = 0; cnt < 16; cnt++) {
@@ -257,15 +257,15 @@ void encryptBlock(char plainBlock[8], char subKeys[16][48]) {
 		}
 	}
 	transformIp_1(plainBits);
-	bit64ToChar8(plainBits, plainBlock);
+	bit64ToUchar8(plainBits, plainBlock);
 }
 
-void decryptBlock(char cipherBlock[8], char subKeys[16][48]) {
-	char cipherBits[64];
-	char copyRight[48];
+void decryptBlock(uint8_t cipherBlock[8], uint8_t subKeys[16][48]) {
+	uint8_t cipherBits[64];
+	uint8_t copyRight[48];
 	int cnt;
 
-	char8ToBit64(cipherBlock, cipherBits);
+	uchar8ToBit64(cipherBlock, cipherBits);
 	transformIp(cipherBits);
 
 	for (cnt = 15; cnt >= 0; cnt--) {
@@ -280,23 +280,23 @@ void decryptBlock(char cipherBlock[8], char subKeys[16][48]) {
 		}
 	}
 	transformIp_1(cipherBits);
-	bit64ToChar8(cipherBits, cipherBlock);
+	bit64ToUchar8(cipherBits, cipherBlock);
 }
 
-void encryptionTripleDes(char* plaintext, int len, char* key1, char* key2, char* key3) {
-	char bitKey1[64];
-	char bitKey2[64];
-	char bitKey3[64];
-	char subBitKey1[16][48];
-	char subBitKey2[16][48];
-	char subBitKey3[16][48];
+void encryptionTripleDes(uint8_t* plaintext, int len, uint8_t* key1, uint8_t* key2, uint8_t* key3) {
+	uint8_t bitKey1[64];
+	uint8_t bitKey2[64];
+	uint8_t bitKey3[64];
+	uint8_t subBitKey1[16][48];
+	uint8_t subBitKey2[16][48];
+	uint8_t subBitKey3[16][48];
 
 	int i;
 	int times = len / 8;
 
-	char8ToBit64(key1, bitKey1);
-	char8ToBit64(key2, bitKey2);
-	char8ToBit64(key2, bitKey3);
+	uchar8ToBit64(key1, bitKey1);
+	uchar8ToBit64(key2, bitKey2);
+	uchar8ToBit64(key2, bitKey3);
 
 	makeBitSubKeys(bitKey1, subBitKey1);
 	makeBitSubKeys(bitKey2, subBitKey2);
@@ -309,20 +309,20 @@ void encryptionTripleDes(char* plaintext, int len, char* key1, char* key2, char*
 	}
 }
 
-void decryptionTripleDes(char* ciphertext, int len, char* key1, char* key2, char* key3) {
-	char bitKey1[64];
-	char bitKey2[64];
-	char bitKey3[64];
-	char subBitKey1[16][48];
-	char subBitKey2[16][48];
-	char subBitKey3[16][48];
+void decryptionTripleDes(uint8_t* ciphertext, int len, uint8_t* key1, uint8_t* key2, uint8_t* key3) {
+	uint8_t bitKey1[64];
+	uint8_t bitKey2[64];
+	uint8_t bitKey3[64];
+	uint8_t subBitKey1[16][48];
+	uint8_t subBitKey2[16][48];
+	uint8_t subBitKey3[16][48];
 
 	int i;
 	int times = len / 8;
 
-	char8ToBit64(key1, bitKey1);
-	char8ToBit64(key2, bitKey2);
-	char8ToBit64(key2, bitKey3);
+	uchar8ToBit64(key1, bitKey1);
+	uchar8ToBit64(key2, bitKey2);
+	uchar8ToBit64(key2, bitKey3);
 
 	makeBitSubKeys(bitKey1, subBitKey1);
 	makeBitSubKeys(bitKey2, subBitKey2);
